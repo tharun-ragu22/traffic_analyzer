@@ -20,6 +20,11 @@ function App() {
       zoom: 13, // Initial map zoom level
 
     });
+
+    map.on("click", (e) => {
+      const { lng, lat } = e.lngLat;
+      console.log(`Clicked at longitude: ${lng}, latitude: ${lat}`);
+    });
     return () => map.remove();
   });
 
