@@ -2,9 +2,12 @@ import React, { useEffect, useRef } from "react";
 import logo from "./logo.svg";
 import maplibregl from "maplibre-gl";
 import "./App.css";
+import { text } from "stream/consumers";
 
-interface Message {
-  text: string;
+interface Coordinates {
+  Lat: number;
+  Lng: number;
+  
 }
 
 function App() {
@@ -21,33 +24,47 @@ function App() {
 
     });
 
-    map.on("click", (e) => {
+    map.on("click", async (e) => {
       const { lng, lat } = e.lngLat;
       console.log(`Clicked at longitude: ${lng}, latitude: ${lat}`);
+
+      const response = await fetch("http://localhost:8080/log", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({lat: lat, lng: lng}),
+      });
+
+      if (!response.ok) {
+        console.error("Failed to log coordinates");
+      }
+
+      console.log((await response.json()).message);
+
+
     });
     return () => map.remove();
   });
 
   const handleButtonClick = async () => {
-    const endpoint = "http://localhost:8080/log";
-    const message: Message = { text: "Hello from React!" };
+    // const endpoint = "http://localhost:8080/log";
+    // const message: Coordinates = { text: "Hello from React!" };
 
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      });
+    // try {
+    //   const response = await fetch(endpoint, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(message),
+    //   });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Response from server:", data);
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     console.log("Response from server:", data);
+    //   }
+    // } catch (error) {
+    //   console.error("Error sending message:", error);
+    // }
   };
   return (
     <div className="App">

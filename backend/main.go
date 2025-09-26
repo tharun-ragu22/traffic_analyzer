@@ -8,20 +8,17 @@ import (
 
 type Coordinates struct {
 	Lat float64 `json:"lat"`
-	Lon float64 `json:"lon"`
+	Lon float64 `json:"lng"`
 }
 
-type Message struct {
-	Text string `json:"text"`
-}
 
 type Response struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 
-func processAndRespond(msg Message) Response {
-	log.Println("Received message:", msg.Text)
+func processAndRespond(msg Coordinates) Response {
+	log.Println("Received message:", msg.Lat, msg.Lon)
 
 	response := Response{
 		Status:  "success",
@@ -47,14 +44,14 @@ func logMessageHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-	var receivedMsg Message
+	var receivedMsg Coordinates
 	err := json.NewDecoder(r.Body).Decode(&receivedMsg)
 	if err != nil {
 		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("Received message: %s", receivedMsg.Text)
+	// log.Printf("Received message: %s", receivedMsg.Text)
 
 	response := processAndRespond(receivedMsg)
 
